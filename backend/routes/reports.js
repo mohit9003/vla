@@ -23,8 +23,17 @@ router.get('/teacher/:code', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const reports = await Report.find();
+    const reports = await Report.find().sort({ submittedAt: -1 });
     res.json(reports);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    await Report.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Report deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
