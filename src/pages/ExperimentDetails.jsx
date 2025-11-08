@@ -2,11 +2,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Beaker, BookOpen, MessageCircle, Send, Sparkles } from "lucide-react";
+import CodeEditor from "../components/CodeEditor";
 
 export default function ExperimentDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [lab, setLab] = useState(null);
+  const [labInfo, setLabInfo] = useState(null);
   const [messages, setMessages] = useState([
     { sender: "ai", text: "Hi! I'm your Virtual Lab Assistant 🤖. How can I help you with this experiment?" },
   ]);
@@ -15,7 +17,15 @@ export default function ExperimentDetails() {
   useEffect(() => {
     fetch(`http://localhost:5000/api/experiments/${id}`)
       .then(res => res.json())
-      .then(data => setLab(data))
+      .then(data => {
+        setLab(data);
+        if (data.labId) {
+          fetch(`http://localhost:5000/api/labs/${data.labId}`)
+            .then(res => res.json())
+            .then(labData => setLabInfo(labData))
+            .catch(err => console.log(err));
+        }
+      })
       .catch(err => console.log(err));
   }, [id]);
 
@@ -75,71 +85,141 @@ export default function ExperimentDetails() {
         </p>
       </motion.div>
 
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
-        {/* Theory & Procedure */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 space-y-6"
-        >
-          <div>
+      {labInfo?.name === "Computer Science Lab" ? (
+        <div className="max-w-7xl mx-auto space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6"
+          >
+            <CodeEditor experimentName={lab.name} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6"
+          >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                <BookOpen size={20} className="text-white" />
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                <MessageCircle size={20} className="text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Theory</h2>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">AI Assistant</h2>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              This experiment focuses on understanding key scientific principles and their real-world applications. 
-              Through hands-on simulation, you'll explore fundamental concepts that form the basis of modern science.
-            </p>
-          </div>
 
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-                <Beaker size={20} className="text-white" />
+            <div className="h-64 overflow-y-auto border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-4 mb-4 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+              {messages.map((msg, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`mb-3 flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[80%] p-3 rounded-2xl text-sm shadow-md ${
+                      msg.sender === "user"
+                        ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-br-none"
+                        : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none"
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                placeholder="Ask about the experiment..."
+                className="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSend}
+                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all flex items-center gap-2"
+              >
+                <Send size={18} />
+              </motion.button>
+            </div>
+          </motion.div>
+
+          <button
+            onClick={() => navigate("/submit-report")}
+            className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:shadow-xl transition-all font-semibold"
+          >
+            Submit Lab Report
+          </button>
+        </div>
+      ) : (
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 space-y-6"
+          >
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                  <BookOpen size={20} className="text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Theory</h2>
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Procedure</h2>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                This experiment focuses on understanding key scientific principles and their real-world applications. 
+                Through hands-on simulation, you'll explore fundamental concepts that form the basis of modern science.
+              </p>
             </div>
-            <ol className="space-y-3 text-gray-600 dark:text-gray-300">
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                <span>Setup all apparatus properly on the lab table.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">2</span>
-                <span>Record initial observations before applying any input.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">3</span>
-                <span>Perform the experiment step-by-step with precision.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">4</span>
-                <span>Note final readings and calculate the results.</span>
-              </li>
-            </ol>
-          </div>
 
-          <div className="pt-4">
-            <button
-              onClick={() => navigate("/submit-report")}
-              className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:shadow-xl transition-all font-semibold"
-            >
-              Submit Lab Report
-            </button>
-          </div>
-        </motion.div>
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                  <Beaker size={20} className="text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Procedure</h2>
+              </div>
+              <ol className="space-y-3 text-gray-600 dark:text-gray-300">
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                  <span>Setup all apparatus properly on the lab table.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                  <span>Record initial observations before applying any input.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                  <span>Perform the experiment step-by-step with precision.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                  <span>Note final readings and calculate the results.</span>
+                </li>
+              </ol>
+            </div>
 
-        {/* AI Assistant */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8"
-        >
+            <div className="pt-4">
+              <button
+                onClick={() => navigate("/submit-report")}
+                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:shadow-xl transition-all font-semibold"
+              >
+                Submit Lab Report
+              </button>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8"
+          >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
               <MessageCircle size={20} className="text-white" />
@@ -186,8 +266,9 @@ export default function ExperimentDetails() {
               <Send size={18} />
             </motion.button>
           </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
