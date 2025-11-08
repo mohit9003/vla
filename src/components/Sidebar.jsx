@@ -29,7 +29,7 @@ export default function Sidebar() {
           animate={{ opacity: open ? 1 : 0 }}
           className="text-2xl font-bold"
         >
-          VLA 🔬
+          Virtual Lab Assistant 🔬
         </motion.h1>
         <button
           onClick={() => setOpen(!open)}
