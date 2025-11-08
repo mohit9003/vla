@@ -7,6 +7,7 @@ import {
   FileText,
   LogOut,
   KeyRound,
+  Megaphone,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -24,6 +25,7 @@ export default function AdminDashboard() {
     { name: "Manage Users", icon: <Users size={20} />, path: "/admin/users" },
     { name: "Manage Experiments", icon: <FlaskConical size={20} />, path: "/admin/experiments" },
     { name: "View Reports", icon: <FileText size={20} />, path: "/admin/reports" },
+    { name: "Announcements", icon: <Megaphone size={20} />, path: "/admin/announcements" },
   ];
 
   const handleLogout = () => {

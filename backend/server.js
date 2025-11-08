@@ -7,6 +7,7 @@ import labRoutes from './routes/labs.js';
 import reportRoutes from './routes/reports.js';
 import userRoutes from './routes/users.js';
 import aiRoutes from './routes/ai.js';
+import announcementRoutes from './routes/announcements.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/labs', labRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', aiRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(` Server running on port ${process.env.PORT}`);

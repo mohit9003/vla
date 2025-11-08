@@ -12,7 +12,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import VirtualLabs from "./pages/VirtualLabs";
 import ExperimentDetails from "./pages/ExperimentDetails";
-
+import StudyResources from "./pages/StudyResources";
+import Notifications from "./pages/Notifications";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -20,6 +21,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageExperiments from "./pages/admin/ManageExperiments";
 import ManageUsers from "./pages/admin/ManageUsers";
 import ViewReports from "./pages/admin/ViewReports";
+import Announcements from "./pages/admin/Announcements";
 
 const AppRoutes = () => {
   return (
@@ -37,7 +39,8 @@ const AppRoutes = () => {
         <Route path="/virtual-labs" element={<VirtualLabs />} />
         <Route path="/experiment/:id" element={<ExperimentDetails />} />
         <Route path="/submit-report" element={<SubmitReport />} />
-
+        <Route path="/resources" element={<StudyResources />} />
+        <Route path="/notifications" element={<Notifications />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -45,6 +48,7 @@ const AppRoutes = () => {
         <Route path="/admin/users" element={<ManageUsers />} />
         <Route path="/admin/experiments" element={<ManageExperiments />} />
         <Route path="/admin/reports" element={<ViewReports />} />
+        <Route path="/admin/announcements" element={<Announcements />} />
 
         {/* Fallback - Redirect unknown routes */}
         <Route path="*" element={<Navigate to="/login" />} />

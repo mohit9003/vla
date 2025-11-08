@@ -1,16 +1,31 @@
 import { Moon, Sun, Bell, User, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [dark, setDark] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [announcements, setAnnouncements] = useState([]);
 
-  const notifications = [
-    { id: 1, title: "New Lab Available", message: "Physics Lab: Pendulum Motion is now available", time: "2 hours ago" },
-    { id: 2, title: "Report Submitted", message: "Your Chemistry Lab report was submitted successfully", time: "5 hours ago" },
-    { id: 3, title: "Welcome!", message: "Welcome to Virtual Lab Assistant. Start exploring labs!", time: "1 day ago" }
-  ];
+  useEffect(() => {
+    const fetchAnnouncements = () => {
+      fetch("http://localhost:5000/api/announcements")
+        .then(res => res.json())
+        .then(data => setAnnouncements(data))
+        .catch(err => console.log(err));
+    };
+    
+    fetchAnnouncements();
+    const interval = setInterval(fetchAnnouncements, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const notifications = announcements.map(ann => ({
+    id: ann._id,
+    title: ann.title,
+    message: ann.message,
+    time: new Date(ann.createdAt).toLocaleString()
+  }));
 
   const toggleTheme = () => {
     setDark(!dark);
@@ -62,25 +77,37 @@ export default function Navbar() {
                   </button>
                 </div>
                 <div className="max-h-96 overflow-y-auto">
-                  {notifications.map((notif) => (
-                    <div
-                      key={notif.id}
-                      className="p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer"
-                    >
-                      <h4 className="font-semibold text-sm text-gray-800 dark:text-white mb-1">
-                        {notif.title}
-                      </h4>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                        {notif.message}
-                      </p>
-                      <span className="text-xs text-gray-500 dark:text-gray-500">
-                        {notif.time}
-                      </span>
+                  {notifications.length > 0 ? (
+                    notifications.map((notif) => (
+                      <div
+                        key={notif.id}
+                        className="p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer"
+                      >
+                        <h4 className="font-semibold text-sm text-gray-800 dark:text-white mb-1">
+                          {notif.title}
+                        </h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                          {notif.message}
+                        </p>
+                        <span className="text-xs text-gray-500 dark:text-gray-500">
+                          {notif.time}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                      No announcements yet
                     </div>
-                  ))}
+                  )}
                 </div>
                 <div className="p-3 text-center border-t border-gray-200 dark:border-gray-700">
-                  <button className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold">
+                  <button 
+                    onClick={() => {
+                      setShowNotifications(false);
+                      window.location.href = '/notifications';
+                    }}
+                    className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
+                  >
                     View All Notifications
                   </button>
                 </div>
