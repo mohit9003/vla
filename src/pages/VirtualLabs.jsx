@@ -49,7 +49,7 @@ export default function VirtualLabs() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
             whileHover={{ scale: 1.05, y: -10 }}
-            onClick={() => navigate(`/experiment/${lab._id}`)}
+            onClick={() => navigate(`/lab/${lab._id}/experiments`)}
             className={`bg-gradient-to-br ${lab.color} text-white rounded-3xl shadow-xl p-8 cursor-pointer relative overflow-hidden group`}
           >
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 group-hover:scale-150 transition-transform duration-500"></div>

@@ -13,7 +13,7 @@ export default function ExperimentDetails() {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/labs/${id}`)
+    fetch(`http://localhost:5000/api/experiments/${id}`)
       .then(res => res.json())
       .then(data => setLab(data))
       .catch(err => console.log(err));
