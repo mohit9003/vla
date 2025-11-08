@@ -128,6 +128,7 @@ export default function Navbar() {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
+          onClick={() => window.location.href = '/profile'}
           className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
         >
           <User size={20} className="text-gray-700 dark:text-gray-300" />
