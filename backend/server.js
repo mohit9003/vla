@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import labRoutes from './routes/labs.js';
 import reportRoutes from './routes/reports.js';
 import userRoutes from './routes/users.js';
+import aiRoutes from './routes/ai.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/labs', labRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api', aiRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(` Server running on port ${process.env.PORT}`);
