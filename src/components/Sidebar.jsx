@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Home, FlaskConical, BookOpen, FileText, LogOut, Menu, X } from "lucide-react";
+import { Home, FlaskConical, BookOpen, FileText, LogOut, Menu, X, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
@@ -11,6 +11,7 @@ export default function Sidebar() {
     { name: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
     { name: "Virtual Labs", icon: <FlaskConical size={20} />, path: "/virtual-labs" },
     { name: "Resources", icon: <BookOpen size={20} />, path: "/resources" },
+    { name: "Progress", icon: <TrendingUp size={20} />, path: "/progress" },
     { name: "Submit Report", icon: <FileText size={20} />, path: "/submit-report" }
   ];
 

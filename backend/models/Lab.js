@@ -5,7 +5,13 @@ const labSchema = new mongoose.Schema({
   description: { type: String, required: true },
   color: { type: String, default: 'from-indigo-500 to-purple-500' },
   procedures: [String],
-  equipment: [String]
+  equipment: [String],
+  resources: [{
+    name: String,
+    type: String,
+    url: String
+  }],
+  deadline: { type: Date }
 }, { timestamps: true });
 
 export default mongoose.model('Lab', labSchema);

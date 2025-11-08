@@ -14,6 +14,7 @@ import VirtualLabs from "./pages/VirtualLabs";
 import ExperimentDetails from "./pages/ExperimentDetails";
 import StudyResources from "./pages/StudyResources";
 import Notifications from "./pages/Notifications";
+import Progress from "./pages/Progress";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -41,6 +42,7 @@ const AppRoutes = () => {
         <Route path="/submit-report" element={<SubmitReport />} />
         <Route path="/resources" element={<StudyResources />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/progress" element={<Progress />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
