@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Beaker, BookOpen, MessageCircle, Send, Sparkles } from "lucide-react";
 import CodeEditor from "../components/CodeEditor";
+import { experimentContent } from "../data/experimentContent";
 
 export default function ExperimentDetails() {
   const { id } = useParams();
@@ -172,8 +173,7 @@ export default function ExperimentDetails() {
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Theory</h2>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                This experiment focuses on understanding key scientific principles and their real-world applications. 
-                Through hands-on simulation, you'll explore fundamental concepts that form the basis of modern science.
+                {experimentContent[lab.name]?.theory || "Theory content for this experiment will be available soon."}
               </p>
             </div>
 
@@ -185,22 +185,17 @@ export default function ExperimentDetails() {
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Procedure</h2>
               </div>
               <ol className="space-y-3 text-gray-600 dark:text-gray-300">
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                  <span>Setup all apparatus properly on the lab table.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">2</span>
-                  <span>Record initial observations before applying any input.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">3</span>
-                  <span>Perform the experiment step-by-step with precision.</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">4</span>
-                  <span>Note final readings and calculate the results.</span>
-                </li>
+                {experimentContent[lab.name]?.procedure?.map((step, index) => (
+                  <li key={index} className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">{index + 1}</span>
+                    <span>{step}</span>
+                  </li>
+                )) || (
+                  <li className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                    <span>Procedure steps will be available soon.</span>
+                  </li>
+                )}
               </ol>
             </div>
 
