@@ -32,8 +32,49 @@ mongoose.connect(process.env.MONGODB_URI, {
   socketTimeoutMS: 45000,
   bufferMaxEntries: 0
 })
-  .then(() => console.log(' MongoDB Connected'))
+  .then(async () => {
+    console.log(' MongoDB Connected');
+    // Auto-seed database on startup
+    await seedDatabase();
+  })
   .catch(err => console.log(' MongoDB Error:', err));
+
+// Auto-seed function
+async function seedDatabase() {
+  try {
+    const { default: Lab } = await import('./models/Lab.js');
+    const { default: User } = await import('./models/User.js');
+    const bcrypt = await import('bcryptjs');
+    
+    // Check if admin exists
+    const adminExists = await User.findOne({ email: 'admin@vla.com' });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      await User.create({
+        name: 'Admin',
+        email: 'admin@vla.com',
+        password: hashedPassword,
+        role: 'admin'
+      });
+      console.log('✅ Admin user created');
+    }
+    
+    // Check if labs exist
+    const labCount = await Lab.countDocuments();
+    if (labCount === 0) {
+      const labs = [
+        { name: 'Physics Lab', description: 'Explore mechanics, optics and motion.', color: 'from-indigo-500 to-purple-500' },
+        { name: 'Chemistry Lab', description: 'Mix and analyze compounds safely.', color: 'from-pink-500 to-red-400' },
+        { name: 'Computer Science Lab', description: 'Run algorithms and simulations.', color: 'from-green-500 to-emerald-400' },
+        { name: 'Electrical Lab', description: 'Circuit theory and power systems.', color: 'from-yellow-400 to-orange-500' }
+      ];
+      await Lab.insertMany(labs);
+      console.log('✅ Labs seeded');
+    }
+  } catch (error) {
+    console.log('Seed error:', error.message);
+  }
+}
 
 app.use('/api/auth', authRoutes);
 app.use('/api/labs', labRoutes);
