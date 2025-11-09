@@ -32,7 +32,7 @@ router.post('/ai-chat', async (req, res) => {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `You are a Virtual Lab Assistant helping students with science experiments. Give a concise, brief answer (2-3 sentences max) to: ${question}`
+            text: `You are a Virtual Lab Assistant helping students with science experiments. Give a concise, brief answer to: ${question}`
           }]
         }]
       })
