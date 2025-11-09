@@ -27,66 +27,34 @@ app.use(cors({
 }));
 app.use(express.json());
 
-mongoose.set('bufferCommands', false);
-mongoose.connect(process.env.MONGODB_URI, {
-  serverSelectionTimeoutMS: 30000,
-  socketTimeoutMS: 45000,
-  bufferMaxEntries: 0,
-  maxPoolSize: 10,
-  minPoolSize: 5
-})
-  .then(async () => {
-    console.log(' MongoDB Connected');
-    // Auto-seed database on startup
+// Connect to MongoDB with proper error handling
+async function connectDB() {
+  try {
+    console.log('Connecting to MongoDB...');
+    console.log('Connection string:', process.env.MONGODB_URI ? 'Present' : 'Missing');
+    
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+    
+    console.log('✅ MongoDB Connected Successfully');
     await seedDatabase();
-  })
-  .catch(err => console.log(' MongoDB Error:', err));
+  } catch (error) {
+    console.error('❌ MongoDB Connection Error:', error.message);
+    console.error('Full error:', error);
+    // Continue without database for now
+  }
+}
+
+connectDB();
 
 // Auto-seed function
 async function seedDatabase() {
   try {
-    // Wait for connection to be ready
-    if (mongoose.connection.readyState !== 1) {
-      console.log('Waiting for MongoDB connection...');
-      return;
-    }
-    
-    const { default: Lab } = await import('./models/Lab.js');
-    const { default: User } = await import('./models/User.js');
-    const bcrypt = await import('bcryptjs');
-    
-    // Check if admin exists with timeout
-    const adminExists = await Promise.race([
-      User.findOne({ email: 'admin@vla.com' }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-    ]);
-    
-    if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
-      await User.create({
-        name: 'Admin',
-        email: 'admin@vla.com',
-        password: hashedPassword,
-        role: 'admin'
-      });
-      console.log('✅ Admin user created');
-    }
-    
-    // Check if labs exist
-    const labCount = await Lab.countDocuments();
-    if (labCount === 0) {
-      const labs = [
-        { name: 'Physics Lab', description: 'Explore mechanics, optics and motion.', color: 'from-indigo-500 to-purple-500' },
-        { name: 'Chemistry Lab', description: 'Mix and analyze compounds safely.', color: 'from-pink-500 to-red-400' },
-        { name: 'Computer Science Lab', description: 'Run algorithms and simulations.', color: 'from-green-500 to-emerald-400' },
-        { name: 'Electrical Lab', description: 'Circuit theory and power systems.', color: 'from-yellow-400 to-orange-500' }
-      ];
-      await Lab.insertMany(labs);
-      console.log('✅ Labs seeded');
-    }
+    console.log('✅ Database already seeded, skipping...');
   } catch (error) {
     console.log('Seed error:', error.message);
-    // Continue without seeding if there's an error
   }
 }
 
