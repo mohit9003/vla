@@ -27,10 +27,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
+mongoose.set('bufferCommands', false);
 mongoose.connect(process.env.MONGODB_URI, {
   serverSelectionTimeoutMS: 30000,
   socketTimeoutMS: 45000,
-  bufferMaxEntries: 0
+  bufferMaxEntries: 0,
+  maxPoolSize: 10,
+  minPoolSize: 5
 })
   .then(async () => {
     console.log(' MongoDB Connected');
@@ -42,12 +45,22 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Auto-seed function
 async function seedDatabase() {
   try {
+    // Wait for connection to be ready
+    if (mongoose.connection.readyState !== 1) {
+      console.log('Waiting for MongoDB connection...');
+      return;
+    }
+    
     const { default: Lab } = await import('./models/Lab.js');
     const { default: User } = await import('./models/User.js');
     const bcrypt = await import('bcryptjs');
     
-    // Check if admin exists
-    const adminExists = await User.findOne({ email: 'admin@vla.com' });
+    // Check if admin exists with timeout
+    const adminExists = await Promise.race([
+      User.findOne({ email: 'admin@vla.com' }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+    ]);
+    
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('admin123', 10);
       await User.create({
@@ -73,6 +86,7 @@ async function seedDatabase() {
     }
   } catch (error) {
     console.log('Seed error:', error.message);
+    // Continue without seeding if there's an error
   }
 }
 
