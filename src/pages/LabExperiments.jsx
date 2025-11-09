@@ -10,12 +10,12 @@ export default function LabExperiments() {
   const [experiments, setExperiments] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/labs/${id}`)
+    fetch(`/api/labs/${id}`)
       .then(res => res.json())
       .then(data => setLab(data))
       .catch(err => console.log(err));
 
-    fetch(`http://localhost:5000/api/experiments/lab/${id}`)
+    fetch(`/api/experiments/lab/${id}`)
       .then(res => res.json())
       .then(data => setExperiments(data))
       .catch(err => console.log(err));

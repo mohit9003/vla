@@ -12,14 +12,14 @@ export default function Dashboard() {
   const [teacherCode, setTeacherCode] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/labs")
+    fetch("/api/labs")
       .then(res => res.json())
       .then(data => setLabs(data))
       .catch(err => console.log(err));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/users/last-teacher-code")
+    fetch("/api/users/last-teacher-code")
       .then(res => res.json())
       .then(data => setTeacherCode(data.code || ""))
       .catch(err => console.log(err));

@@ -12,7 +12,7 @@ export default function ManageUsers() {
   }, []);
 
   const fetchUsers = () => {
-    fetch("http://localhost:5000/api/users")
+    fetch("/api/users")
       .then(res => res.json())
       .then(data => setUsers(data))
       .catch(err => console.log(err));
@@ -22,7 +22,7 @@ export default function ManageUsers() {
     if (!confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
+      await fetch(`/api/users/${id}`, { method: "DELETE" });
       fetchUsers();
     } catch (err) {
       console.log(err);

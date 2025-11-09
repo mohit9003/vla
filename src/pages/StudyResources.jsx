@@ -8,7 +8,7 @@ export default function StudyResources() {
   const [labs, setLabs] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/labs")
+    fetch("/api/labs")
       .then(res => res.json())
       .then(data => setLabs(data))
       .catch(err => console.log(err));

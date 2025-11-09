@@ -2,13 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
+import { api } from "../config/api";
 
 export default function VirtualLabs() {
   const navigate = useNavigate();
   const [labs, setLabs] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/labs")
+    api.labs.getAll()
       .then(res => res.json())
       .then(data => setLabs(data))
       .catch(err => console.log(err));

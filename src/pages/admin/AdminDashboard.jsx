@@ -43,7 +43,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const storedCode = localStorage.getItem("teacherCode") || classCode;
 
-    fetch(`http://localhost:5000/api/reports/teacher/${storedCode}`)
+    fetch(`/api/reports/teacher/${storedCode}`)
       .then((res) => res.json())
       .then((data) => setReports(data))
       .catch((err) => console.log(err));
@@ -51,7 +51,7 @@ export default function AdminDashboard() {
 
   // Fetch total users
   useEffect(() => {
-    fetch("http://localhost:5000/api/users")
+    fetch("/api/users")
       .then((res) => res.json())
       .then((data) => setTotalUsers(data.length))
       .catch((err) => console.log(err));
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
 
   // Fetch active experiments
   useEffect(() => {
-    fetch("http://localhost:5000/api/labs")
+    fetch("/api/labs")
       .then((res) => res.json())
       .then((data) => setActiveLabs(data.length))
       .catch((err) => console.log(err));

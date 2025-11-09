@@ -9,7 +9,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const fetchAnnouncements = () => {
-      fetch("http://localhost:5000/api/announcements")
+      fetch("/api/announcements")
         .then(res => res.json())
         .then(data => setAnnouncements(data))
         .catch(err => console.log(err));

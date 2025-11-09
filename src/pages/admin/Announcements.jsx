@@ -26,7 +26,7 @@ export default function Announcements() {
   }, []);
 
   const fetchAnnouncements = () => {
-    fetch("http://localhost:5000/api/announcements")
+    fetch("/api/announcements")
       .then(res => res.json())
       .then(data => setAnnouncements(data))
       .catch(err => console.log(err));
@@ -34,7 +34,7 @@ export default function Announcements() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://localhost:5000/api/announcements", {
+    fetch("/api/announcements", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, message })
@@ -50,7 +50,7 @@ export default function Announcements() {
   };
 
   const handleDelete = (id) => {
-    fetch(`http://localhost:5000/api/announcements/${id}`, { method: "DELETE" })
+    fetch(`/api/announcements/${id}`, { method: "DELETE" })
       .then(() => fetchAnnouncements())
       .catch(err => console.log(err));
   };

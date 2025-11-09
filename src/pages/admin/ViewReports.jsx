@@ -12,7 +12,7 @@ export default function ViewReports() {
   }, []);
 
   const fetchReports = () => {
-    fetch("http://localhost:5000/api/reports")
+    fetch("/api/reports")
       .then(res => res.json())
       .then(data => setReports(data))
       .catch(err => console.log(err));
@@ -22,7 +22,7 @@ export default function ViewReports() {
     if (!confirm("Are you sure you want to delete this report?")) return;
 
     try {
-      await fetch(`http://localhost:5000/api/reports/${id}`, { method: "DELETE" });
+      await fetch(`/api/reports/${id}`, { method: "DELETE" });
       fetchReports();
     } catch (err) {
       console.log(err);

@@ -30,7 +30,7 @@ export default function ManageExperiments() {
   }, []);
 
   const fetchLabs = () => {
-    fetch("http://localhost:5000/api/labs")
+    fetch("/api/labs")
       .then(res => res.json())
       .then(data => setExperiments(data))
       .catch(err => console.log(err));
@@ -55,7 +55,7 @@ export default function ManageExperiments() {
   const saveResource = (url) => {
     const updatedResources = [...(selectedLab.resources || []), { name: resourceName, type: resourceType, url }];
     
-    fetch(`http://localhost:5000/api/labs/${selectedLab._id}`, {
+    fetch(`/api/labs/${selectedLab._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...selectedLab, resources: updatedResources })
@@ -77,7 +77,7 @@ export default function ManageExperiments() {
     const lab = experiments.find(l => l._id === labId);
     const updatedResources = lab.resources.filter((_, i) => i !== resourceIndex);
     
-    fetch(`http://localhost:5000/api/labs/${labId}`, {
+    fetch(`/api/labs/${labId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...lab, resources: updatedResources })

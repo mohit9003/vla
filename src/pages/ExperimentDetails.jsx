@@ -17,12 +17,12 @@ export default function ExperimentDetails() {
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/experiments/${id}`)
+    fetch(`/api/experiments/${id}`)
       .then(res => res.json())
       .then(data => {
         setLab(data);
         if (data.labId) {
-          fetch(`http://localhost:5000/api/labs/${data.labId}`)
+          fetch(`/api/labs/${data.labId}`)
             .then(res => res.json())
             .then(labData => setLabInfo(labData))
             .catch(err => console.log(err));
@@ -40,7 +40,7 @@ export default function ExperimentDetails() {
     setIsTyping(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai-chat", {
+      const res = await fetch("/api/ai-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: input }),

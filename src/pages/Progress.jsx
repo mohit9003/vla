@@ -9,13 +9,13 @@ export default function Progress() {
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/labs")
+    fetch("/api/labs")
       .then(res => res.json())
       .then(data => setLabs(data))
       .catch(err => console.log(err));
 
     const studentName = localStorage.getItem("studentName") || "Student";
-    fetch("http://localhost:5000/api/reports")
+    fetch("/api/reports")
       .then(res => res.json())
       .then(data => setReports(data.filter(r => r.studentName === studentName)))
       .catch(err => console.log(err));
