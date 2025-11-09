@@ -14,6 +14,7 @@ export default function ExperimentDetails() {
     { sender: "ai", text: "Hi! I'm your Virtual Lab Assistant 🤖. How can I help you with this experiment?" },
   ]);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/experiments/${id}`)
@@ -30,28 +31,33 @@ export default function ExperimentDetails() {
       .catch(err => console.log(err));
   }, [id]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage = { sender: "user", text: input };
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput("");
+    setIsTyping(true);
 
-    setTimeout(() => {
-      const aiReply = { sender: "ai", text: generateAIResponse(input) };
-      setMessages((prev) => [...prev, aiReply]);
-    }, 1000);
-  };
-
-  const generateAIResponse = (query) => {
-    const lower = query.toLowerCase();
-    if (lower.includes("step") || lower.includes("procedure"))
-      return "Make sure you carefully follow the experimental steps in the given order for accurate readings.";
-    if (lower.includes("theory"))
-      return "This experiment demonstrates the basic scientific principle behind the law being tested.";
-    if (lower.includes("result"))
-      return "Analyze your readings and calculate the mean values for precise results.";
-    return "I'm here to assist with theory, procedure, or safety guidelines of this experiment.";
+    try {
+      const res = await fetch("http://localhost:5000/api/ai-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: input }),
+      });
+      const data = await res.json();
+      
+      if (data.error) {
+        setMessages(prev => [...prev, { sender: "ai", text: `❌ Error: ${data.error}` }]);
+      } else {
+        setMessages(prev => [...prev, { sender: "ai", text: data.answer }]);
+      }
+    } catch (err) {
+      console.log(err);
+      setMessages(prev => [...prev, { sender: "ai", text: `❌ Network Error: ${err.message}` }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   if (!lab) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -128,6 +134,15 @@ export default function ExperimentDetails() {
                   </div>
                 </motion.div>
               ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-white dark:bg-gray-700 p-3 rounded-2xl flex gap-1">
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -278,6 +293,15 @@ export default function ExperimentDetails() {
                   </div>
                 </motion.div>
               ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-white dark:bg-gray-700 p-3 rounded-2xl flex gap-1">
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
