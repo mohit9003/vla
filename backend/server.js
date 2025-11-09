@@ -52,7 +52,63 @@ connectDB();
 // Auto-seed function
 async function seedDatabase() {
   try {
-    console.log('✅ Database already seeded, skipping...');
+    const { default: Lab } = await import('./models/Lab.js');
+    const { default: User } = await import('./models/User.js');
+    const { default: Experiment } = await import('./models/Experiment.js');
+    const bcrypt = await import('bcryptjs');
+    
+    // Check if admin exists
+    const adminExists = await User.findOne({ email: 'admin@vla.com' });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      await User.create({
+        name: 'Admin',
+        email: 'admin@vla.com',
+        password: hashedPassword,
+        role: 'admin'
+      });
+      console.log('✅ Admin user created');
+    }
+    
+    // Check if labs exist
+    const labCount = await Lab.countDocuments();
+    if (labCount === 0) {
+      const labs = [
+        { name: 'Physics Lab', description: 'Explore mechanics, optics and motion.', color: 'from-indigo-500 to-purple-500' },
+        { name: 'Chemistry Lab', description: 'Mix and analyze compounds safely.', color: 'from-pink-500 to-red-400' },
+        { name: 'Computer Science Lab', description: 'Run algorithms and simulations.', color: 'from-green-500 to-emerald-400' },
+        { name: 'Electrical Lab', description: 'Circuit theory and power systems.', color: 'from-yellow-400 to-orange-500' }
+      ];
+      await Lab.insertMany(labs);
+      console.log('✅ Labs seeded');
+    }
+    
+    // Check if experiments exist
+    const expCount = await Experiment.countDocuments();
+    if (expCount === 0) {
+      const experimentsData = {
+        "Physics Lab": ["Ohm's Law Verification", "Measurement of Resistance using Voltmeter & Ammeter", "Verification of Kirchhoff's Laws", "Determination of Focal Length of Convex Lens", "Resonance in LCR Circuit"],
+        "Chemistry Lab": ["Acid-Base Titration", "Determination of pH using pH Meter", "Determination of Chloride Content in Water", "Estimation of Hardness of Water by EDTA Method", "Chemical Kinetics: Rate of Reaction of Hydrolysis of Ester"],
+        "Computer Science Lab": ["SQL Queries on Database", "Implementation of Stack and Queue (DSA)", "Sorting Algorithms (Bubble, Quick, Merge)", "CPU Scheduling Algorithms (OS)", "Page Replacement Algorithms"],
+        "Electrical Lab": ["Verification of Ohm's Law", "Measurement of Power and Power Factor in AC Circuit", "Study of Series & Parallel RLC Circuit", "Measurement of Energy using Energy Meter", "Open Circuit & Short Circuit Test on Transformer"]
+      };
+      
+      const labs = await Lab.find();
+      for (const lab of labs) {
+        const expNames = experimentsData[lab.name];
+        if (expNames) {
+          for (const expName of expNames) {
+            await Experiment.create({
+              name: expName,
+              labId: lab._id,
+              description: `Learn and perform ${expName} experiment`,
+              resources: []
+            });
+          }
+        }
+      }
+      console.log('✅ Experiments seeded');
+    }
   } catch (error) {
     console.log('Seed error:', error.message);
   }
