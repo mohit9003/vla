@@ -1,4 +1,4 @@
-# Deployment Guide - Render
+# Deployment Guide - Render (Single Service)
 
 ## Prerequisites
 1. GitHub account with your code pushed
@@ -13,46 +13,28 @@
 4. Whitelist all IP addresses (0.0.0.0/0) for Render
 5. Get your connection string
 
-## Step 2: Deploy Backend on Render
+## Step 2: Deploy Full Stack App on Render
 1. Go to [Render Dashboard](https://dashboard.render.com/)
 2. Click "New +" → "Web Service"
 3. Connect your GitHub repository
 4. Configure:
-   - **Name**: vla-backend
-   - **Root Directory**: backend
+   - **Name**: vla-app
+   - **Root Directory**: (leave empty)
    - **Environment**: Node
-   - **Build Command**: npm install
+   - **Build Command**: npm run build:full
    - **Start Command**: npm start
 5. Add Environment Variables:
    - `MONGODB_URI`: Your MongoDB Atlas connection string
    - `GEMINI_API_KEY`: Your Google Gemini API key
    - `NODE_ENV`: production
-   - `PORT`: 10000
 6. Deploy
 
-## Step 3: Deploy Frontend on Render
-1. Click "New +" → "Static Site"
-2. Connect same GitHub repository
-3. Configure:
-   - **Name**: vla-frontend
-   - **Root Directory**: (leave empty)
-   - **Build Command**: npm install && npm run build
-   - **Publish Directory**: dist
-4. Add Environment Variable:
-   - `VITE_API_URL`: https://your-backend-url.onrender.com/api
-5. Deploy
+## Step 3: Seed Database (Optional)
+1. In Render service, go to "Shell"
+2. Run: `cd backend && node seed.js`
 
-## Step 4: Update CORS Settings
-After frontend deployment, update backend environment variables:
-- Add your frontend URL to CORS origins in server.js
-
-## Step 5: Seed Database (Optional)
-1. In Render backend service, go to "Shell"
-2. Run: `node seed.js`
-
-## URLs
-- Backend: https://vla-backend.onrender.com
-- Frontend: https://vla-frontend.onrender.com
+## URL
+- Full App: https://vla-app.onrender.com
 
 ## Default Login Credentials
 - Student: student@example.com / student123

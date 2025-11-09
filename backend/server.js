@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import labRoutes from './routes/labs.js';
 import reportRoutes from './routes/reports.js';
@@ -9,6 +11,9 @@ import userRoutes from './routes/users.js';
 import aiRoutes from './routes/ai.js';
 import announcementRoutes from './routes/announcements.js';
 import experimentRoutes from './routes/experiments.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -33,6 +38,15 @@ app.use('/api/users', userRoutes);
 app.use('/api', aiRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/experiments', experimentRoutes);
+
+// Serve static files from React build
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../dist')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+  });
+}
 
 app.listen(process.env.PORT, () => {
   console.log(` Server running on port ${process.env.PORT}`);
