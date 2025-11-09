@@ -30,24 +30,39 @@ export default function ViewReports() {
   };
 
   const handleDownload = async (reportId, fileName) => {
+    console.log('Download clicked for report:', reportId, 'fileName:', fileName);
+    
+    if (!fileName) {
+      alert('No file attached to this report');
+      return;
+    }
+    
     try {
+      console.log('Fetching download URL:', `/api/reports/download/${reportId}`);
       const response = await fetch(`/api/reports/download/${reportId}`);
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const blob = await response.blob();
+        console.log('Blob created, size:', blob.size);
+        
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = fileName || 'report';
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
+        console.log('Download initiated');
       } else {
-        alert('No file attached to this report');
+        const errorText = await response.text();
+        console.error('Download failed:', errorText);
+        alert('Failed to download file: ' + errorText);
       }
     } catch (err) {
-      console.log(err);
-      alert('Error downloading file');
+      console.error('Download error:', err);
+      alert('Error downloading file: ' + err.message);
     }
   };
 
@@ -139,7 +154,11 @@ export default function ViewReports() {
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => handleDownload(report._id, report.fileName)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDownload(report._id, report.fileName);
+                        }}
                         className={`p-2 rounded-lg transition-all ${
                           report.fileName 
                             ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800' 
