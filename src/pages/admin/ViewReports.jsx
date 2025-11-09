@@ -29,6 +29,28 @@ export default function ViewReports() {
     }
   };
 
+  const handleDownload = async (reportId, fileName) => {
+    try {
+      const response = await fetch(`/api/reports/download/${reportId}`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName || 'report';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        alert('No file attached to this report');
+      }
+    } catch (err) {
+      console.log(err);
+      alert('Error downloading file');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8">
       <motion.button
@@ -117,8 +139,14 @@ export default function ViewReports() {
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        className="p-2 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-800 transition-all"
-                        title="Download"
+                        onClick={() => handleDownload(report._id, report.fileName)}
+                        className={`p-2 rounded-lg transition-all ${
+                          report.fileName 
+                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800' 
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                        }`}
+                        title={report.fileName ? `Download ${report.fileName}` : 'No file attached'}
+                        disabled={!report.fileName}
                       >
                         <Download size={18} />
                       </motion.button>
