@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { FileText, Send, ArrowLeft } from "lucide-react";
+import { FileText, Send, ArrowLeft, Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function SubmitReport() {
@@ -9,16 +9,35 @@ export default function SubmitReport() {
   const [experiment, setExperiment] = useState("");
   const [teacherCode, setTeacherCode] = useState(localStorage.getItem("teacherCode") || "");
   const [message, setMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     
     try {
+      const formData = new FormData();
+      formData.append('studentName', studentName);
+      formData.append('experiment', experiment);
+      formData.append('teacherCode', teacherCode);
+      if (selectedFile) {
+        formData.append('reportFile', selectedFile);
+      }
+
       const res = await fetch("/api/reports", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentName, experiment, teacherCode }),
+        body: formData,
       });
 
       const data = await res.json();
@@ -27,6 +46,7 @@ export default function SubmitReport() {
         setMessage("success");
         setStudentName("");
         setExperiment("");
+        setSelectedFile(null);
       } else {
         setMessage("error");
       }
@@ -113,6 +133,56 @@ export default function SubmitReport() {
                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Attach Report File (Optional)
+              </label>
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 text-center hover:border-indigo-500 transition-all">
+                {!selectedFile ? (
+                  <div>
+                    <Upload size={48} className="mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Click to upload or drag and drop
+                    </p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      PDF, DOC, DOCX up to 10MB
+                    </p>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="inline-flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 cursor-pointer transition-all"
+                    >
+                      <Upload size={16} className="mr-2" />
+                      Choose File
+                    </label>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                    <div className="flex items-center">
+                      <FileText size={24} className="text-indigo-500 mr-3" />
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">{selectedFile.name}</p>
+                        <p className="text-sm text-gray-500">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeFile}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <motion.button
