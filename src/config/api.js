@@ -39,5 +39,18 @@ export const api = {
   },
   users: {
     getAll: () => fetchWithCredentials(`${API_URL}/users`)
+  },
+  announcements: {
+    getAll: () => fetchWithCredentials(`${API_URL}/announcements`)
+  },
+  experiments: {
+    getAll: () => fetchWithCredentials(`${API_URL}/experiments`),
+    getById: (id) => fetchWithCredentials(`${API_URL}/experiments/${id}`)
+  },
+  ai: {
+    chat: (data) => fetchWithCredentials(`${API_URL}/ai/chat`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
   }
 };
