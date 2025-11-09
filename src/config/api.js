@@ -1,36 +1,43 @@
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
+const fetchWithCredentials = (url, options = {}) => {
+  return fetch(url, {
+    ...options,
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  });
+};
+
 export const api = {
   auth: {
-    signup: (data) => fetch(`${API_URL}/auth/signup`, {
+    signup: (data) => fetchWithCredentials(`${API_URL}/auth/signup`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }),
-    login: (data) => fetch(`${API_URL}/auth/login`, {
+    login: (data) => fetchWithCredentials(`${API_URL}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }),
-    adminLogin: (data) => fetch(`${API_URL}/auth/admin/login`, {
+    adminLogin: (data) => fetchWithCredentials(`${API_URL}/auth/admin/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
   },
   labs: {
-    getAll: () => fetch(`${API_URL}/labs`),
-    getById: (id) => fetch(`${API_URL}/labs/${id}`)
+    getAll: () => fetchWithCredentials(`${API_URL}/labs`),
+    getById: (id) => fetchWithCredentials(`${API_URL}/labs/${id}`)
   },
   reports: {
-    submit: (data) => fetch(`${API_URL}/reports`, {
+    submit: (data) => fetchWithCredentials(`${API_URL}/reports`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }),
-    getByTeacherCode: (code) => fetch(`${API_URL}/reports/teacher/${code}`)
+    getByTeacherCode: (code) => fetchWithCredentials(`${API_URL}/reports/teacher/${code}`)
   },
   users: {
-    getAll: () => fetch(`${API_URL}/users`)
+    getAll: () => fetchWithCredentials(`${API_URL}/users`)
   }
 };
