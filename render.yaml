@@ -1,0 +1,33 @@
+services:
+  # Backend API
+  - type: web
+    name: vla-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        fromDatabase:
+          name: vla-mongodb
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # Frontend
+  - type: web
+    name: vla-frontend
+    env: node
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://vla-backend.onrender.com
+
+databases:
+  - name: vla-mongodb
+    databaseName: vla
+    user: vla_user
